@@ -29,24 +29,15 @@ function getQuakeCircles(earthquakeData) {
 
       var color = "";
           if (quakeData[i].properties.mag < 1) {
-            color = "rgb(200, 250, 19)";
+            color = "yellow";
           }
           else if (quakeData[i].properties.mag < 2) {
-            color = "rgb(250, 246, 19)";
+            color = "orange";
           }
-          // else if (quakeData[i].properties.mag < 3) {
-          //   color = "rgb(250, 215, 19)";
-          // }          
-          else if (quakeData[i].properties.mag < 3) {
-            color = "rgb(250, 131, 19)";
-          }         
-          // else if (quakeData[i].properties.mag < 5) {
-          //   color = "rgb(207, 70, 28)";
-          // }
           else {
-            color = "rgb(150, 3, 3)";
+            color = "red";
           }
-      myRadius = quakeData[i].properties.mag * 30000;
+      myRadius = quakeData[i].properties.mag * 50000;
       // console.log(myRadius); 
       // console.log(quakeData[i].geometry.coordinates);
       var myCoords = [];
@@ -54,7 +45,7 @@ function getQuakeCircles(earthquakeData) {
       // console.log(myCoords);
 
       circleData.push(L.circle(myCoords, {
-        fillOpacity: 0.75,
+        fillOpacity: 0.5,
         color: color,
         fillColor: color,
         // fillColor: "red",
@@ -114,7 +105,7 @@ function createMap(quakemap) {
         37.09, -95.71
       ],
       zoom: 5,
-      layers: [satmap, quakemap]
+      layers: [streetmap, quakemap]
     });
 
     L.control.layers(baseMaps, overlayMaps, {collapsed: false}).addTo(myMap);
