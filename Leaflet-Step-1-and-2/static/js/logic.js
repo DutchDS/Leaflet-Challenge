@@ -151,7 +151,7 @@ function createMap(quakemap, bounderies, my_zoom, my_coord) {
 
     var overlayMaps = {
       Earthquakes: quakemap,
-      Boundaries: bounderies
+      "Tectonic Plates": bounderies
     };
     
     console.log(my_coord);
