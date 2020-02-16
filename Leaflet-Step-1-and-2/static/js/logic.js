@@ -142,7 +142,7 @@ var legend = L.control({ position: "bottomleft" });
 
 legend.onAdd = function(map) {
   var div = L.DomUtil.create("div", "legend");
-  div.innerHTML += "<h4>Index</h4>";
+  div.innerHTML += "<h4>Magnitude</h4>";
   div.innerHTML += '<i style="background: #008000"></i><span>0 - 1</span><br>';
   div.innerHTML += '<i style="background: #7DC000"></i><span>1 - 2</span><br>';
   div.innerHTML += '<i style="background: #ffff00"></i><span>2 - 3</span><br>';
