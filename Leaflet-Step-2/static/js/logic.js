@@ -67,14 +67,45 @@ function getQuakeCircles(earthquakeData) {
     }
           // console.log(circleData);
           quakemap = L.layerGroup(circleData)
-          createMap(quakemap); 
+
+          bounderies = createBounderiesMap(quakemap)
+
   };
 
+  
+ function createBounderiesMap(quakemap) {
+    var geoData = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+    var geojson;
+  
+  // Grab data with d3
+  d3.json(geoData, function(data) {
+    createFeatures(data.features);
+  });
+  
+  function createFeatures(earthquakeData) {
+  
+    // Define a function we want to run once for each feature in the features array
+    // Give each feature a popup describing the place and time of the earthquake
+    function onEachFeature(feature, layer) {
+      layer.bindPopup("hello");
+    }
+  
+    // Create a GeoJSON layer containing the features array on the earthquakeData object
+    // Run the onEachFeature function once for each piece of data in the array
+    var bounderies = L.geoJSON(earthquakeData, {
+      onEachFeature: onEachFeature
+    });
+  
+    // Sending our earthquakes layer to the createMap function
+    
+    createMap(quakemap, bounderies); 
+    }
+  }
 ////////////////////////////////////////////////////////////////////////////
 //// now create all the maps when this function is called in the end ///////
 ////////////////////////////////////////////////////////////////////////////
 
-function createMap(quakemap) {
+function createMap(quakemap, bounderies) {
 
     var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
@@ -105,15 +136,16 @@ function createMap(quakemap) {
     };
 
     var overlayMaps = {
-      Earthquakes: quakemap
+      Earthquakes: quakemap,
+      Boundaries: bounderies
     };
 
     var myMap = L.map("map", {
       center: [
         37.09, -95.71
       ],
-      zoom: 5,
-      layers: [satmap, quakemap]
+      zoom: 3,
+      layers: [satmap, quakemap, bounderies]
     });
 
     L.control.layers(baseMaps, overlayMaps, {collapsed: false}).addTo(myMap);

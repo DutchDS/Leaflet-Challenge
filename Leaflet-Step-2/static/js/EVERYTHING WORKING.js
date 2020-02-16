@@ -1,21 +1,17 @@
-var queryUrl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-01-04";
+var queryUrl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-01-02";
 
-///////////////////////////////////////////////////////////////////////////
-//// Retrieve the data and start defining circles to plot /////////////////
-///////////////////////////////////////////////////////////////////////////
 
+// Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
   // Once we get a response, send the data.features object to the createFeatures function
   getQuakeCircles(data.features);
 });
 
-////////////////////////////////////////////////////////////////////////////
-//// Using the retrieved data, create a circle data array for the layer ////
-////////////////////////////////////////////////////////////////////////////
 
 function getQuakeCircles(earthquakeData) { 
     
       var myData = earthquakeData;
+    
       var circleData = [];
       var quakeData = [];
       
@@ -24,55 +20,46 @@ function getQuakeCircles(earthquakeData) {
       for (var i = 0; i < myData.length; i++) {
           var quake = myData[i];
           quakeData.push(quake);
+        // console.log(quake);
       }
         console.log(quakeData); 
   
-//// Loop through the magnitutdes and assign colors ////
+// Loop through the cities array and create one marker for each city object
     for (var i = 0; i < quakeData.length; i++) {
 
       var color = "";
           if (quakeData[i].properties.mag < 1) {
-            color = "rgb(200, 250, 19)";
+            color = "yellow";
           }
           else if (quakeData[i].properties.mag < 2) {
-            color = "rgb(250, 246, 19)";
-          }
-          else if (quakeData[i].properties.mag < 3) {
             color = "orange";
-          }          
-          else if (quakeData[i].properties.mag < 4) {
-            color = "rgb(207, 70, 28)";
-          }         
-          else if (quakeData[i].properties.mag < 5) {
-            color = "rgb(150, 3, 3)";
           }
           else {
-            color = "rgb(121, 2, 2)";
+            color = "red";
           }
-
-      myRadius = quakeData[i].properties.mag * 30000;
+      myRadius = quakeData[i].properties.mag * 50000;
       // console.log(myRadius); 
       // console.log(quakeData[i].geometry.coordinates);
       var myCoords = [];
       myCoords = [quakeData[i].geometry.coordinates[1], quakeData[i].geometry.coordinates[0]];
-      
-      //// Append each circle definition to circleData ////
+      // console.log(myCoords);
+
       circleData.push(L.circle(myCoords, {
-        fillOpacity: 0.75,
+        fillOpacity: 0.5,
         color: color,
         fillColor: color,
+        // fillColor: "red",
         radius: myRadius
       })
-      .bindPopup("<h2>" + quakeData[i].properties.place + "</h2> <hr> <h4>Magnitude: " + quakeData[i].properties.mag + "</h4>"));
-    }
-          // console.log(circleData);
+      .bindPopup("<h2>" + quakeData[i].properties.place + "</h2> <hr> <h4>Magnitude: " + quakeData[i].properties.mag + "</h4>"))
+      // .addTo(myMap)
+      ;
+      }
+          console.log(circleData);
           quakemap = L.layerGroup(circleData)
           createMap(quakemap); 
-  };
 
-////////////////////////////////////////////////////////////////////////////
-//// now create all the maps when this function is called in the end ///////
-////////////////////////////////////////////////////////////////////////////
+  };
 
 function createMap(quakemap) {
 
@@ -97,23 +84,28 @@ function createMap(quakemap) {
       accessToken: API_KEY
     });
 
-    //// DEFINE MAPS AND LAYERS AND DISPLAY //////////////////
+    /////////////////////////////////////////////////////////////
+    ////////////START DEFINING MAPS AND LAYERS //////////////////
+    /////////////////////////////////////////////////////////////
+
     var baseMaps = {
       Streetmap: streetmap,
       Nightmap: nightmap,
       Satellite: satmap
     };
 
+    // Overlays that may be toggled on or off
     var overlayMaps = {
       Earthquakes: quakemap
     };
 
+    // Create a map object
     var myMap = L.map("map", {
       center: [
         37.09, -95.71
       ],
       zoom: 5,
-      layers: [satmap, quakemap]
+      layers: [streetmap, quakemap]
     });
 
     L.control.layers(baseMaps, overlayMaps, {collapsed: false}).addTo(myMap);
