@@ -32,25 +32,25 @@ function getQuakeCircles(earthquakeData) {
 
       var color = "";
           if (quakeData[i].properties.mag < 1) {
-            color = "rgb(200, 250, 19)";
+            color = "#008000";
           }
           else if (quakeData[i].properties.mag < 2) {
-            color = "rgb(250, 246, 19)";
+            color = "#7DC000";
           }
           else if (quakeData[i].properties.mag < 3) {
-            color = "orange";
+            color = "	#ffff00";
           }          
           else if (quakeData[i].properties.mag < 4) {
-            color = "rgb(207, 70, 28)";
+            color = "#ffa500";
           }         
           else if (quakeData[i].properties.mag < 5) {
-            color = "rgb(150, 3, 3)";
+            color = "#ff0000";
           }
           else {
-            color = "rgb(121, 2, 2)";
+            color = "#800000";
           }
 
-      myRadius = quakeData[i].properties.mag * 30000;
+      myRadius = quakeData[i].properties.mag * 40000;
       // console.log(myRadius); 
       // console.log(quakeData[i].geometry.coordinates);
       var myCoords = [];
@@ -58,48 +58,35 @@ function getQuakeCircles(earthquakeData) {
       
       //// Append each circle definition to circleData ////
       circleData.push(L.circle(myCoords, {
-        fillOpacity: 0.75,
+        fillOpacity: .75,
         color: color,
         fillColor: color,
         radius: myRadius
       })
       .bindPopup("<h2>" + quakeData[i].properties.place + "</h2> <hr> <h4>Magnitude: " + quakeData[i].properties.mag + "</h4>"));
     }
-          // console.log(circleData);
+          console.log(circleData);
           quakemap = L.layerGroup(circleData)
-
           bounderies = createBounderiesMap(quakemap)
 
   };
-
   
  function createBounderiesMap(quakemap) {
     var geoData = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
-    var geojson;
   
   // Grab data with d3
   d3.json(geoData, function(data) {
-    createFeatures(data.features);
-  });
+    
+    function onEachFeature(feature, layer) {}
   
-  function createFeatures(earthquakeData) {
-  
-    // Define a function we want to run once for each feature in the features array
-    // Give each feature a popup describing the place and time of the earthquake
-    function onEachFeature(feature, layer) {
-      layer.bindPopup("hello");
-    }
-  
-    // Create a GeoJSON layer containing the features array on the earthquakeData object
-    // Run the onEachFeature function once for each piece of data in the array
-    var bounderies = L.geoJSON(earthquakeData, {
-      onEachFeature: onEachFeature
+    var bounderies = L.geoJSON(data, {
+      onEachFeature: onEachFeature,
+      color: "lightblue",
+      weight: 3
     });
   
-    // Sending our earthquakes layer to the createMap function
-    
     createMap(quakemap, bounderies); 
-    }
+    });
   }
 ////////////////////////////////////////////////////////////////////////////
 //// now create all the maps when this function is called in the end ///////
@@ -149,4 +136,24 @@ function createMap(quakemap, bounderies) {
     });
 
     L.control.layers(baseMaps, overlayMaps, {collapsed: false}).addTo(myMap);
+
+/*Legend specific*/
+var legend = L.control({ position: "bottomleft" });
+
+legend.onAdd = function(map) {
+  var div = L.DomUtil.create("div", "legend");
+  div.innerHTML += "<h4>Index</h4>";
+  div.innerHTML += '<i style="background: #008000"></i><span>0 - 1</span><br>';
+  div.innerHTML += '<i style="background: #7DC000"></i><span>1 - 2</span><br>';
+  div.innerHTML += '<i style="background: #ffff00"></i><span>2 - 3</span><br>';
+  div.innerHTML += '<i style="background: #ffa500"></i><span>3 - 4</span><br>';
+  div.innerHTML += '<i style="background: #ff0000"></i><span>4 - 5</span><br>';
+  div.innerHTML += '<i style="background: #800000"></i><span>> 5</span><br>';  
+
+  return div;
+};
+
+legend.addTo(myMap);
+
 }
+
