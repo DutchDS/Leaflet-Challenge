@@ -1,25 +1,44 @@
 // var queryUrl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-01-04";
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+var my_zoom = 3;
+var radius_ratio = 40000;
+var my_coord = [37.09, -95.71]
 ///////////////////////////////////////////////////////////////////////////
 //// Retrieve the data and start defining circles to plot /////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-d3.json(queryUrl, function(data) {
+function startMap(my_zoom, radius_ratio, my_coord) {
+
+  console.log(my_zoom, radius_ratio, my_coord)
+  d3.json(queryUrl, function(data) {
   // Once we get a response, send the data.features object to the createFeatures function
-  getQuakeCircles(data.features);
+  getQuakeCircles(data.features, my_zoom, radius_ratio, my_coord);
 });
+}
+
+startMap(my_zoom, radius_ratio, my_coord)
+
+function initializingMap() // call this method before you initialize your map.
+  { 
+    var container = L.DomUtil.get('map');
+      console.log(container);
+      if(container != null){
+      container._leaflet_id = null;
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////
 //// Using the retrieved data, create a circle data array for the layer ////
 ////////////////////////////////////////////////////////////////////////////
 
-function getQuakeCircles(earthquakeData) { 
+function getQuakeCircles(earthquakeData, my_zoom, radius_ratio, my_coord) { 
     
       var myData = earthquakeData;
       var circleData = [];
       var quakeData = [];
       
       console.log(myData);
+      console.log(my_coord);
 
       for (var i = 0; i < myData.length; i++) {
           var quake = myData[i];
@@ -50,7 +69,7 @@ function getQuakeCircles(earthquakeData) {
             color = "#800000";
           }
 
-      myRadius = quakeData[i].properties.mag * 40000;
+      myRadius = quakeData[i].properties.mag * radius_ratio;
       // console.log(myRadius); 
       // console.log(quakeData[i].geometry.coordinates);
       var myCoords = [];
@@ -66,14 +85,16 @@ function getQuakeCircles(earthquakeData) {
       .bindPopup("<h2>" + quakeData[i].properties.place + "</h2> <hr> <h4>Magnitude: " + quakeData[i].properties.mag + "</h4>"));
     }
           console.log(circleData);
-          quakemap = L.layerGroup(circleData)
-          bounderies = createBounderiesMap(quakemap)
+          quakemap = L.layerGroup(circleData);
+          console.log(my_coord);
+          bounderies = createBounderiesMap(quakemap,my_zoom, my_coord);
 
   };
   
- function createBounderiesMap(quakemap) {
+ function createBounderiesMap(quakemap, my_zoom, my_coord) {
     var geoData = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
   
+    console.log(my_coord);
   // Grab data with d3
   d3.json(geoData, function(data) {
     
@@ -85,30 +106,34 @@ function getQuakeCircles(earthquakeData) {
       weight: 3
     });
   
-    createMap(quakemap, bounderies); 
+    createMap(quakemap, bounderies,my_zoom, my_coord); 
     });
   }
 ////////////////////////////////////////////////////////////////////////////
 //// now create all the maps when this function is called in the end ///////
 ////////////////////////////////////////////////////////////////////////////
 
-function createMap(quakemap, bounderies) {
+function createMap(quakemap, bounderies, my_zoom, my_coord) {
 
-    var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    document.getElementById('map').innerHTML = "<div id='map' style='width: 100%; height: 100%;'></div>";
+    
+    initializingMap()
+
+    var streetmap = new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
       maxZoom: 18,
       id: "mapbox.streets-basic",
       accessToken: API_KEY
     })
 
-    var nightmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    var nightmap = new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
       maxZoom: 18,
       id: "mapbox.dark",
       accessToken: API_KEY
     });
 
-    var satmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    var satmap = new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
       maxZoom: 18,
       id: "mapbox.satellite",
@@ -126,12 +151,11 @@ function createMap(quakemap, bounderies) {
       Earthquakes: quakemap,
       Boundaries: bounderies
     };
-
-    var myMap = L.map("map", {
-      center: [
-        37.09, -95.71
-      ],
-      zoom: 3,
+    
+    console.log(my_coord);
+    var myMap = new L.map("map", {
+      center: my_coord,
+      zoom: my_zoom,
       layers: [satmap, quakemap, bounderies]
     });
 
@@ -154,6 +178,46 @@ legend.onAdd = function(map) {
 };
 
 legend.addTo(myMap);
+
+myMap.on('zoomend', function() {
+  var currentZoom = myMap.getZoom();
+  console.log(currentZoom);
+  if (currentZoom>5 && currentZoom<7) {
+      var my_zoom = 6;
+      var radius_ratio = 10000;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom > 8 && currentZoom <10) {
+      var my_zoom = 9;
+      var radius_ratio = 2000;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom >= 12) {
+      var my_zoom = 12;
+      var radius_ratio = 300;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom <= 3) {
+      var my_zoom = 3;
+      var radius_ratio = 40000;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+
+    
+
+
+    ////////////////////////////BACK TO WHERE IT WORKS ///////////////////////    
+    });
+
+  
 
 }
 
