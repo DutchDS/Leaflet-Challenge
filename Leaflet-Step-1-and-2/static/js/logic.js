@@ -74,7 +74,7 @@ function getQuakeCircles(earthquakeData, my_zoom, radius_ratio, my_coord) {
       // console.log(quakeData[i].geometry.coordinates);
       var myCoords = [];
       myCoords = [quakeData[i].geometry.coordinates[1], quakeData[i].geometry.coordinates[0]];
-      
+      var myDate = Date(quakeData[i].properties.date)
       //// Append each circle definition to circleData ////
       circleData.push(L.circle(myCoords, {
         fillOpacity: .75,
@@ -82,7 +82,9 @@ function getQuakeCircles(earthquakeData, my_zoom, radius_ratio, my_coord) {
         fillColor: color,
         radius: myRadius
       })
-      .bindPopup("<h2>" + quakeData[i].properties.place + "</h2> <hr> <h4>Magnitude: " + quakeData[i].properties.mag + "</h4>"));
+      .bindPopup("<h2>" + quakeData[i].properties.place + "</h2> <hr> <h4>Magnitude: " 
+                        + quakeData[i].properties.mag + "</h4> <hr> <h4>Date: " 
+                        + myDate + "</h4>"));
     }
           console.log(circleData);
           quakemap = L.layerGroup(circleData);
