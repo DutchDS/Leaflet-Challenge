@@ -6,4 +6,4 @@ You've got to love graphics! Adding the creation of maps to our list of assignme
 The data is retrieved from ![USGS](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php) and will in this particular case retrieve all earthquakes from the past week worldwide.
 
 The result:
-![EarthQuakes_2.png](Leaflet-Step-1-and-2/static/images/EarthQuakes_2.png) 
+![EarthQuakes_3.png](Leaflet-Step-1-and-2/static/images/EarthQuakes_3.png) 
