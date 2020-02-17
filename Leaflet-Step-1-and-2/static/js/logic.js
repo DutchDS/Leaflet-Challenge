@@ -81,8 +81,8 @@ function getQuakeCircles(earthquakeData, my_zoom, radius_ratio, my_coord) {
         return t;}
 
       var mysec = quakeData[i].properties.time;
-      var myDate = toDateTime(mysec).toGMTString();
-      console.log(myDate)
+      var myDate = toDateTime(mysec).toLocaleString();
+      console.log(myDate) 
 
       //// Append each circle definition to circleData ////
       circleData.push(L.circle(myCoords, {
