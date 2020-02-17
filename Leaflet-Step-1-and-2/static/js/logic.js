@@ -74,7 +74,16 @@ function getQuakeCircles(earthquakeData, my_zoom, radius_ratio, my_coord) {
       // console.log(quakeData[i].geometry.coordinates);
       var myCoords = [];
       myCoords = [quakeData[i].geometry.coordinates[1], quakeData[i].geometry.coordinates[0]];
-      var myDate = Date(quakeData[i].properties.date)
+      
+
+      function toDateTime(secs) {
+        var t = new Date(secs);
+        return t;}
+
+      var mysec = quakeData[i].properties.time;
+      var myDate = toDateTime(mysec).toGMTString();
+      console.log(myDate)
+
       //// Append each circle definition to circleData ////
       circleData.push(L.circle(myCoords, {
         fillOpacity: .75,
@@ -201,6 +210,13 @@ myMap.on('zoomend', function() {
   else if (currentZoom >= 12) {
       var my_zoom = 12;
       var radius_ratio = 300;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom >= 16) {
+      var my_zoom = 16;
+      var radius_ratio = 100;
       var temp_coord = myMap.getCenter();
       var my_coord = [temp_coord.lat, temp_coord.lng];
       myMap.remove();
