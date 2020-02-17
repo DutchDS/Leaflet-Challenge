@@ -82,7 +82,7 @@ function getQuakeCircles(earthquakeData, my_zoom, radius_ratio, my_coord) {
 
       var mysec = quakeData[i].properties.time;
       var myDate = toDateTime(mysec).toLocaleString();
-      console.log(myDate) 
+      // console.log(myDate) 
 
       //// Append each circle definition to circleData ////
       circleData.push(L.circle(myCoords, {
@@ -193,46 +193,49 @@ legend.addTo(myMap);
 myMap.on('zoomend', function() {
   var currentZoom = myMap.getZoom();
   console.log(currentZoom);
-  if (currentZoom>5 && currentZoom<7) {
-      var my_zoom = 6;
-      var radius_ratio = 10000;
-      var temp_coord = myMap.getCenter();
-      var my_coord = [temp_coord.lat, temp_coord.lng];
-      myMap.remove();
-      startMap(my_zoom, radius_ratio, my_coord)}
-  else if (currentZoom > 8 && currentZoom <10) {
-      var my_zoom = 9;
-      var radius_ratio = 2000;
-      var temp_coord = myMap.getCenter();
-      var my_coord = [temp_coord.lat, temp_coord.lng];
-      myMap.remove();
-      startMap(my_zoom, radius_ratio, my_coord)}
-  else if (currentZoom >= 12) {
-      var my_zoom = 12;
-      var radius_ratio = 300;
-      var temp_coord = myMap.getCenter();
-      var my_coord = [temp_coord.lat, temp_coord.lng];
-      myMap.remove();
-      startMap(my_zoom, radius_ratio, my_coord)}
-  else if (currentZoom >= 16) {
-      var my_zoom = 16;
-      var radius_ratio = 100;
-      var temp_coord = myMap.getCenter();
-      var my_coord = [temp_coord.lat, temp_coord.lng];
-      myMap.remove();
-      startMap(my_zoom, radius_ratio, my_coord)}
-  else if (currentZoom <= 3) {
-      var my_zoom = 3;
+  if (currentZoom <= 3) {
+      var my_zoom = currentZoom;
       var radius_ratio = 40000;
       var temp_coord = myMap.getCenter();
       var my_coord = [temp_coord.lat, temp_coord.lng];
       myMap.remove();
       startMap(my_zoom, radius_ratio, my_coord)}
-
-    
-
-
-    ////////////////////////////BACK TO WHERE IT WORKS ///////////////////////    
+  else if (currentZoom>=5 && currentZoom<7) {
+      var my_zoom = currentZoom;
+      var radius_ratio = 10000;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom >= 8 && currentZoom <10) {
+      var my_zoom = currentZoom;
+      var radius_ratio = 2000;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom >= 12  && currentZoom <14) {
+      var my_zoom = currentZoom;
+      var radius_ratio = 300;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom >= 16  && currentZoom <18) {
+      var my_zoom = currentZoom;
+      var radius_ratio = 100;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  else if (currentZoom >= 18) {
+      var my_zoom = currentZoom;
+      var radius_ratio = 50;
+      var temp_coord = myMap.getCenter();
+      var my_coord = [temp_coord.lat, temp_coord.lng];
+      myMap.remove();
+      startMap(my_zoom, radius_ratio, my_coord)}
+  
     });
 
   
